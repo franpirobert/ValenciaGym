@@ -8,37 +8,46 @@
 <body>
 
 <script>
-  const PHONE_NUMBER = "5493854086653";
+  // =========================
+  // CONFIGURACIÓN
+  // =========================
+  const PHONE_NUMBER = "5493854086653"; // sin + ni espacios
 
+  // =========================
+  // PARÁMETROS
+  // =========================
   const params = new URLSearchParams(window.location.search);
 
-  const tipo   = params.get("tipo");
-  const nombre = params.get("nombre") || "!";
-  const plan   = params.get("plan") || "";
-  const fecha  = params.get("fecha") || "";
+  const nombre = params.get("nombre");
+  const plan   = params.get("plan");
+  const fecha  = params.get("fecha");
   const link   = params.get("link")
     ? decodeURIComponent(params.get("link"))
     : "";
 
   let mensaje = "";
 
-  if (tipo === "bienvenida_socio") {
+  // =========================
+  // LÓGICA SIMPLE Y ROBUSTA
+  // =========================
+  if (nombre) {
     mensaje =
-`👋 Hola ${nombre}
+`👋 Hola ${nombre}!
 
 🎉 Bienvenido/a a *Valencia Gym* 💪
 ${plan ? `\nElegiste el plan *${plan}*` : ""}
 ${fecha ? `\n📅 Vencimiento mensual: ${fecha}` : ""}
 
-${link ? `\n🔗 Tu perfil:\n${link}` : ""}
+${link ? `\n🔗 Tu perfil de socio:\n${link}` : ""}
 
 Desde ahí vas a poder:
-🏋️‍♂️ Ver tu rutina
+🏋️‍♂️ Ver tu rutina personalizada
 📆 Inscribirte a actividades
 ℹ️ Acceder a toda la info del gym
 
 ¡A entrenar! 🔥`;
   } else {
+    // Fallback real
     mensaje =
 `👋 Hola!
 
@@ -47,6 +56,9 @@ Consultanos y sumate cuando quieras.
 ¡A entrenar! 🔥`;
   }
 
+  // =========================
+  // WHATSAPP
+  // =========================
   const whatsappUrl =
     "https://api.whatsapp.com/send" +
     "?phone=" + PHONE_NUMBER +
