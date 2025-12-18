@@ -3,25 +3,44 @@
 <head>
   <meta charset="utf-8" />
   <title>Redireccionando a WhatsApp…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
+
 <script>
-  const p = new URLSearchParams(window.location.search);
-  const tipo = p.get("tipo");
+  // =========================
+  // CONFIGURACIÓN
+  // =========================
+  // Número de WhatsApp en formato internacional, sin +, sin espacios
+  const PHONE_NUMBER = "5493854086653";
+
+  // =========================
+  // OBTENER PARÁMETROS
+  // =========================
+  const params = new URLSearchParams(window.location.search);
+
+  const tipo   = params.get("tipo");
+  const nombre = params.get("nombre") || "";
+  const plan   = params.get("plan") || "";
+  const fecha  = params.get("fecha") || "";
+  const link   = params.get("link") ? decodeURIComponent(params.get("link")) : "";
 
   let mensaje = "";
 
+  // =========================
+  // MENSAJES
+  // =========================
   if (tipo === "bienvenida_socio") {
     mensaje =
-`👋 Hola ${p.get("nombre")}!
+`👋 Hola ${nombre}!
 
 🎉 Bienvenido/a a *Valencia Gym* 💪
 
-Elegiste el plan *${p.get("plan")}*
-📅 Tu fecha de vencimiento mensual es ${p.get("fecha")}
+Elegiste el plan *${plan}*
+📅 Tu fecha de vencimiento mensual es ${fecha}
 
 🔗 Acá tenés el link a tu perfil de socio:
-${decodeURIComponent(p.get("link"))}
+${link}
 
 Desde ahí vas a poder:
 🏋️‍♂️ Ver tu rutina personalizada
@@ -29,16 +48,26 @@ Desde ahí vas a poder:
 ℹ️ Acceder a toda la info del gym
 
 ¡A entrenar! 🔥`;
+  } else {
+    // Fallback por si faltan parámetros
+    mensaje = "Hola! Te esperamos en Valencia Gym 💪";
   }
 
-  const phone = "5493854086653"; // numero sin + ni espacios
+  // =========================
+  // REDIRECCIÓN A WHATSAPP
+  // =========================
+  const whatsappUrl =
+    "https://api.whatsapp.com/send" +
+    "?phone=" + PHONE_NUMBER +
+    "&text=" + encodeURIComponent(mensaje);
 
-const url =
-  "https://api.whatsapp.com/send?phone=" + phone +
-  "&text=" + encodeURIComponent(mensaje);
-
-
-  window.location.href = url;
+  // Redirección final
+  window.location.replace(whatsappUrl);
 </script>
+
+<noscript>
+  Para continuar, habilitá JavaScript.
+</noscript>
+
 </body>
 </html>
