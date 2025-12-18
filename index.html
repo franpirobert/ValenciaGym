@@ -8,84 +8,52 @@
 <body>
 
 <script>
-  // =========================
-  // CONFIGURACIÓN GENERAL
-  // =========================
-  // Número de WhatsApp en formato internacional
-  // Sin +, sin espacios, sin guiones
   const PHONE_NUMBER = "5493854086653";
 
-  // =========================
-  // PARÁMETROS DE ENTRADA
-  // =========================
   const params = new URLSearchParams(window.location.search);
 
   const tipo   = params.get("tipo");
-  const nombre = params.get("nombre");
-  const plan   = params.get("plan");
-  const fecha  = params.get("fecha");
+  const nombre = params.get("nombre") || "!";
+  const plan   = params.get("plan") || "";
+  const fecha  = params.get("fecha") || "";
   const link   = params.get("link")
     ? decodeURIComponent(params.get("link"))
     : "";
 
   let mensaje = "";
 
-  // =========================
-  // MENSAJE PRINCIPAL
-  // =========================
-  if (
-    tipo === "bienvenida_socio" &&
-    nombre &&
-    plan &&
-    fecha &&
-    link
-  ) {
+  if (tipo === "bienvenida_socio") {
     mensaje =
-`👋 Hola ${nombre}!
+`👋 Hola ${nombre}
 
 🎉 Bienvenido/a a *Valencia Gym* 💪
+${plan ? `\nElegiste el plan *${plan}*` : ""}
+${fecha ? `\n📅 Vencimiento mensual: ${fecha}` : ""}
 
-Elegiste el plan *${plan}*
-📅 Tu fecha de vencimiento mensual es ${fecha}
-
-🔗 Acá tenés el link a tu perfil de socio:
-${link}
+${link ? `\n🔗 Tu perfil:\n${link}` : ""}
 
 Desde ahí vas a poder:
-🏋️‍♂️ Ver tu rutina personalizada
+🏋️‍♂️ Ver tu rutina
 📆 Inscribirte a actividades
 ℹ️ Acceder a toda la info del gym
 
 ¡A entrenar! 🔥`;
   } else {
-    // =========================
-    // FALLBACK SEGURO
-    // =========================
     mensaje =
 `👋 Hola!
 
 🎉 Te esperamos en *Valencia Gym* 💪
-
 Consultanos y sumate cuando quieras.
 ¡A entrenar! 🔥`;
   }
 
-  // =========================
-  // REDIRECCIÓN A WHATSAPP
-  // =========================
   const whatsappUrl =
     "https://api.whatsapp.com/send" +
     "?phone=" + PHONE_NUMBER +
     "&text=" + encodeURIComponent(mensaje);
 
-  // Redirección final
   window.location.replace(whatsappUrl);
 </script>
 
-<noscript>
-  Para continuar, habilitá JavaScript.
-</noscript>
-
 </body>
 </html>
-
