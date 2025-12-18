@@ -12,12 +12,15 @@
   // CONFIGURACIÓN
   // =========================
   const PHONE_NUMBER = "5493854086653"; // sin + ni espacios
+  const ALIAS_PAGO = "Valencia.gym";
+  const BANCO_PAGO = "Brubank";
 
   // =========================
   // PARÁMETROS
   // =========================
   const params = new URLSearchParams(window.location.search);
 
+  const tipo   = params.get("tipo");
   const nombre = params.get("nombre");
   const plan   = params.get("plan");
   const fecha  = params.get("fecha");
@@ -28,9 +31,11 @@
   let mensaje = "";
 
   // =========================
-  // LÓGICA SIMPLE Y ROBUSTA
+  // ROUTER DE MENSAJES
   // =========================
-  if (nombre) {
+
+  // Bienvenida socio
+  if (tipo === "bienvenida_socio" && nombre) {
     mensaje =
 `👋 Hola ${nombre}!
 
@@ -46,13 +51,94 @@ Desde ahí vas a poder:
 ℹ️ Acceder a toda la info del gym
 
 ¡A entrenar! 🔥`;
-  } else {
-    // Fallback real
+  }
+
+  // Bienvenida entrenador
+  else if (tipo === "bienvenida_entrenador" && nombre) {
+    mensaje =
+`👋 Hola ${nombre}!
+
+Bienvenido/a al equipo de *Valencia Gym* 💪
+
+${link ? `🔗 Acceso a tu perfil de entrenador:\n${link}\n` : ""}
+¡Vamos con todo! 🔥`;
+  }
+
+  // Cumpleaños socio
+  else if (tipo === "cumple_socio" && nombre) {
+    mensaje =
+`🎉 Feliz cumple ${nombre}! 🥳
+
+Todo el equipo de *Valencia Gym* te desea un excelente día 💪
+Gracias por entrenar con nosotros.
+
+¡Que sea un gran año! 🔥`;
+  }
+
+  // Cumpleaños entrenador
+  else if (tipo === "cumple_entrenador" && nombre) {
+    mensaje =
+`🎉 Feliz cumple ${nombre}! 🥳
+
+Gracias por ser parte del equipo de *Valencia Gym* 💪
+Que tengas un año lleno de energía y buenos entrenamientos.
+
+¡Vamos! 🔥`;
+  }
+
+  // Recordatorio: faltan 5 días
+  else if (tipo === "recordatorio_5_dias" && nombre && fecha) {
+    mensaje =
+`⏰ Hola ${nombre}
+
+Te recordamos que en *5 días* vence tu membresía mensual
+📅 Fecha de vencimiento: *${fecha}*
+
+Para seguir entrenando sin interrupciones, podés regularizarla cuando quieras 💪
+Cualquier duda, estamos a disposición.
+
+¡Te esperamos en Valencia Gym! 🔥`;
+  }
+
+  // Vence hoy
+  else if (tipo === "vencimiento_proximo" && nombre && fecha) {
+    mensaje =
+`⏰ Hola ${nombre}
+
+Tu membresía mensual vence *hoy*
+📅 Fecha de vencimiento: *${fecha}*
+
+Podés regularizarla para continuar entrenando con normalidad 💪
+Cualquier consulta, escribinos o acercate a la recepción.
+
+¡Gracias por entrenar en Valencia Gym! 🔥`;
+  }
+
+  // Cuota vencida
+  else if (tipo === "cuota_vencida" && nombre && fecha) {
+    mensaje =
+`⚠️ Hola ${nombre}
+
+Tu membresía mensual venció el *${fecha}*.
+
+Para regularizarla y continuar entrenando, podés:
+💳 Transferir al alias:
+*${ALIAS_PAGO}*
+Banco: *${BANCO_PAGO}*
+
+o acercarte a la recepción del gimnasio y lo resolvemos ahí mismo 💪
+
+¡Te esperamos! 🔥`;
+  }
+
+  // Fallback
+  else {
     mensaje =
 `👋 Hola!
 
 🎉 Te esperamos en *Valencia Gym* 💪
 Consultanos y sumate cuando quieras.
+
 ¡A entrenar! 🔥`;
   }
 
