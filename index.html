@@ -31,9 +31,12 @@ Desde ahí vas a poder:
 ¡A entrenar! 🔥`;
   }
 
-  const url =
-    "https://api.whatsapp.com/send?text=" +
-    encodeURIComponent(mensaje);
+  const phone = "5493854086653"; // numero sin + ni espacios
+
+const url =
+  "https://api.whatsapp.com/send?phone=" + phone +
+  "&text=" + encodeURIComponent(mensaje);
+
 
   window.location.href = url;
 </script>
