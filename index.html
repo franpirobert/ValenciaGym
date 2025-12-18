@@ -9,28 +9,37 @@
 
 <script>
   // =========================
-  // CONFIGURACIÓN
+  // CONFIGURACIÓN GENERAL
   // =========================
-  // Número de WhatsApp en formato internacional, sin +, sin espacios
+  // Número de WhatsApp en formato internacional
+  // Sin +, sin espacios, sin guiones
   const PHONE_NUMBER = "5493854086653";
 
   // =========================
-  // OBTENER PARÁMETROS
+  // PARÁMETROS DE ENTRADA
   // =========================
   const params = new URLSearchParams(window.location.search);
 
   const tipo   = params.get("tipo");
-  const nombre = params.get("nombre") || "";
-  const plan   = params.get("plan") || "";
-  const fecha  = params.get("fecha") || "";
-  const link   = params.get("link") ? decodeURIComponent(params.get("link")) : "";
+  const nombre = params.get("nombre");
+  const plan   = params.get("plan");
+  const fecha  = params.get("fecha");
+  const link   = params.get("link")
+    ? decodeURIComponent(params.get("link"))
+    : "";
 
   let mensaje = "";
 
   // =========================
-  // MENSAJES
+  // MENSAJE PRINCIPAL
   // =========================
-  if (tipo === "bienvenida_socio") {
+  if (
+    tipo === "bienvenida_socio" &&
+    nombre &&
+    plan &&
+    fecha &&
+    link
+  ) {
     mensaje =
 `👋 Hola ${nombre}!
 
@@ -49,8 +58,16 @@ Desde ahí vas a poder:
 
 ¡A entrenar! 🔥`;
   } else {
-    // Fallback por si faltan parámetros
-    mensaje = "Hola! Te esperamos en Valencia Gym 💪";
+    // =========================
+    // FALLBACK SEGURO
+    // =========================
+    mensaje =
+`👋 Hola!
+
+🎉 Te esperamos en *Valencia Gym* 💪
+
+Consultanos y sumate cuando quieras.
+¡A entrenar! 🔥`;
   }
 
   // =========================
@@ -71,3 +88,4 @@ Desde ahí vas a poder:
 
 </body>
 </html>
+
