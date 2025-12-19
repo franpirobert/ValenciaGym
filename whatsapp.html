@@ -8,149 +8,116 @@
 <body>
 
 <script>
-  // =========================
-  // PARÁMETROS DESDE BASE44
-  // =========================
   const params = new URLSearchParams(window.location.search);
 
-  const tipo     = params.get("tipo");        // tipo de mensaje
-  const nombre   = params.get("nombre");      // nombre socio / entrenador
-  const plan     = params.get("plan");        // plan
-  const fecha    = params.get("fecha");       // fecha vencimiento
-  const telefono = params.get("telefono");    // DESTINO WHATSAPP (OBLIGATORIO)
-  const link     = params.get("link")
-    ? decodeURIComponent(params.get("link"))
-    : "";
+  // =========================
+  // TELÉFONO (OBLIGATORIO)
+  // =========================
+  const phoneRaw = params.get("phone");
+
+  if (!phoneRaw) {
+    document.body.innerHTML = `
+      <h2>Error</h2>
+      <p>No se recibió el teléfono del socio.</p>
+    `;
+    throw new Error("Phone missing");
+  }
+
+  const phone = phoneRaw.replace(/\D/g, "");
 
   // =========================
-  // VALIDACIÓN BÁSICA
+  // TIPO DE MENSAJE
   // =========================
-  if (!telefono) {
-    alert("Error: no se recibió el teléfono del socio.");
-    throw new Error("Parametro 'telefono' faltante");
-  }
+  const type = params.get("type") || "welcome";
+
+  // =========================
+  // DATOS OPCIONALES
+  // =========================
+  const nombre = params.get("nombre") || "";
+  const plan   = params.get("plan") || "";
+  const fecha  = params.get("fecha") || "";
+  const link   = params.get("link") ? decodeURIComponent(params.get("link")) : "";
 
   let mensaje = "";
 
   // =========================
-  // ROUTER DE MENSAJES
+  // MENSAJES
   // =========================
 
-  // 1️⃣ Bienvenida socio
-  if (tipo === "bienvenida_socio" && nombre) {
-    mensaje =
-`👋 Hola ${nombre}!
+  // BIENVENIDA SOCIO
+  if (type === "welcome") {
+    mensaje = `👋 Hola ${nombre}!
 
 🎉 Bienvenido/a a *Valencia Gym* 💪
-${plan ? `\nElegiste el plan *${plan}*` : ""}
-${fecha ? `\n📅 Vencimiento mensual: ${fecha}` : ""}
+${plan ? `🏷 Plan: ${plan}` : ""}
+${fecha ? `📅 Fecha de ingreso: ${fecha}` : ""}
 
-${link ? `\n🔗 Tu perfil de socio:\n${link}` : ""}
-
-Desde ahí vas a poder:
-🏋️‍♂️ Ver tu rutina personalizada
-📆 Inscribirte a actividades
-ℹ️ Acceder a toda la info del gym
+${link ? `🔗 Tu perfil de socio:\n${link}` : ""}
 
 ¡A entrenar! 🔥`;
   }
 
-  // 2️⃣ Bienvenida entrenador
-  else if (tipo === "bienvenida_entrenador" && nombre) {
-    mensaje =
-`👋 Hola ${nombre}!
+  // RECORDATORIO 5 DÍAS
+  else if (type === "reminder") {
+    mensaje = `👋 Hola ${nombre}!
 
-Bienvenido/a al equipo de *Valencia Gym* 💪
+⏰ Te recordamos que faltan *5 días* para el vencimiento de tu membresía.
 
-${link ? `🔗 Acceso a tu perfil de entrenador:\n${link}\n` : ""}
+📅 Vencimiento: ${fecha}
+
+Cualquier cosa escribinos 💪`;
+  }
+
+  // VENCIMIENTO
+  else if (type === "due") {
+    mensaje = `👋 Hola ${nombre}!
+
+📌 Tu membresía está vencida.
+📅 Vencimiento: ${fecha}
+
+💳 Para regularizar:
+Alias: *valencia.gym*
+Banco: *Brubank*
+
+O podés acercarte a recepción.
+¡Gracias! 💪`;
+  }
+
+  // CUMPLEAÑOS
+  else if (type === "birthday") {
+    mensaje = `🎂 ¡Feliz cumpleaños ${nombre}! 🎉
+
+Desde *Valencia Gym* te deseamos un gran día 💪
+Gracias por ser parte de la comunidad.
+
+¡Te esperamos para entrenar! 🔥`;
+  }
+
+  // BIENVENIDA ENTRENADOR
+  else if (type === "trainer") {
+    mensaje = `👋 ¡Bienvenido/a a *Valencia Gym*! 💪
+
+Ya estás dado/a de alta como entrenador/a.
 ¡Vamos con todo! 🔥`;
   }
 
-  // 3️⃣ Cumpleaños socio
-  else if (tipo === "cumple_socio" && nombre) {
-    mensaje =
-`🎉 Feliz cumple ${nombre}! 🥳
-
-Todo el equipo de *Valencia Gym* te desea un excelente día 💪
-Gracias por entrenar con nosotros.
-
-¡Que sea un gran año! 🔥`;
-  }
-
-  // 4️⃣ Cumpleaños entrenador
-  else if (tipo === "cumple_entrenador" && nombre) {
-    mensaje =
-`🎉 Feliz cumple ${nombre}! 🥳
-
-Gracias por ser parte del equipo de *Valencia Gym* 💪
-Que tengas un año lleno de energía y buenos entrenamientos.
-
-¡Vamos! 🔥`;
-  }
-
-  // 5️⃣ Recordatorio: faltan 5 días
-  else if (tipo === "recordatorio_5_dias" && nombre && fecha) {
-    mensaje =
-`⏰ Hola ${nombre}
-
-Te recordamos que en *5 días* vence tu membresía mensual
-📅 Fecha de vencimiento: *${fecha}*
-
-Para seguir entrenando sin interrupciones, podés regularizarla cuando quieras 💪
-Cualquier duda, estamos a disposición.
-
-¡Te esperamos en Valencia Gym! 🔥`;
-  }
-
-  // 6️⃣ Vence hoy
-  else if (tipo === "vencimiento_proximo" && nombre && fecha) {
-    mensaje =
-`⏰ Hola ${nombre}
-
-Tu membresía mensual vence *hoy*
-📅 Fecha de vencimiento: *${fecha}*
-
-Podés regularizarla para continuar entrenando con normalidad 💪
-Cualquier consulta, escribinos o acercate a la recepción.
-
-¡Gracias por entrenar en Valencia Gym! 🔥`;
-  }
-
-  // 7️⃣ Cuota vencida
-  else if (tipo === "cuota_vencida" && nombre && fecha) {
-    mensaje =
-`⚠️ Hola ${nombre}
-
-Tu membresía mensual venció el *${fecha}*.
-
-Para regularizarla y continuar entrenando, podés:
-💳 Transferir al alias:
-*Valencia.gym*
-Banco: *Brubank*
-
-o acercarte a la recepción del gimnasio y lo resolvemos ahí mismo 💪
-
-¡Te esperamos! 🔥`;
-  }
-
-  // 8️⃣ Fallback seguro
+  // FALLBACK
   else {
-    mensaje =
-`👋 Hola!
+    mensaje = `👋 Hola!
 
 🎉 Te esperamos en *Valencia Gym* 💪
-Consultanos y sumate cuando quieras.
-
+Consultanos cuando quieras.
 ¡A entrenar! 🔥`;
   }
 
   // =========================
-  // REDIRECCIÓN A WHATSAPP
+  // REDIRECCIÓN WHATSAPP
   // =========================
   const whatsappUrl =
-    "https://api.whatsapp.com/send" +
-    "?phone=" + telefono +
-    "&text=" + encodeURIComponent(mensaje);
+    "https://api.whatsapp.com/send?phone=" +
+    phone +
+    "&text=" +
+    encodeURIComponent(mensaje);
 
   window.location.replace(whatsappUrl);
 </script>
