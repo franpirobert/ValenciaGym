@@ -9,24 +9,26 @@
 
 <script>
   // =========================
-  // CONFIGURACIÓN
-  // =========================
-  const PHONE_NUMBER = "5493854086653"; // sin + ni espacios
-  const ALIAS_PAGO = "Valencia.gym";
-  const BANCO_PAGO = "Brubank";
-
-  // =========================
-  // PARÁMETROS
+  // PARÁMETROS DESDE BASE44
   // =========================
   const params = new URLSearchParams(window.location.search);
 
-  const tipo   = params.get("tipo");
-  const nombre = params.get("nombre");
-  const plan   = params.get("plan");
-  const fecha  = params.get("fecha");
-  const link   = params.get("link")
+  const tipo     = params.get("tipo");        // tipo de mensaje
+  const nombre   = params.get("nombre");      // nombre socio / entrenador
+  const plan     = params.get("plan");        // plan
+  const fecha    = params.get("fecha");       // fecha vencimiento
+  const telefono = params.get("telefono");    // DESTINO WHATSAPP (OBLIGATORIO)
+  const link     = params.get("link")
     ? decodeURIComponent(params.get("link"))
     : "";
+
+  // =========================
+  // VALIDACIÓN BÁSICA
+  // =========================
+  if (!telefono) {
+    alert("Error: no se recibió el teléfono del socio.");
+    throw new Error("Parametro 'telefono' faltante");
+  }
 
   let mensaje = "";
 
@@ -34,7 +36,7 @@
   // ROUTER DE MENSAJES
   // =========================
 
-  // Bienvenida socio
+  // 1️⃣ Bienvenida socio
   if (tipo === "bienvenida_socio" && nombre) {
     mensaje =
 `👋 Hola ${nombre}!
@@ -53,7 +55,7 @@ Desde ahí vas a poder:
 ¡A entrenar! 🔥`;
   }
 
-  // Bienvenida entrenador
+  // 2️⃣ Bienvenida entrenador
   else if (tipo === "bienvenida_entrenador" && nombre) {
     mensaje =
 `👋 Hola ${nombre}!
@@ -64,7 +66,7 @@ ${link ? `🔗 Acceso a tu perfil de entrenador:\n${link}\n` : ""}
 ¡Vamos con todo! 🔥`;
   }
 
-  // Cumpleaños socio
+  // 3️⃣ Cumpleaños socio
   else if (tipo === "cumple_socio" && nombre) {
     mensaje =
 `🎉 Feliz cumple ${nombre}! 🥳
@@ -75,7 +77,7 @@ Gracias por entrenar con nosotros.
 ¡Que sea un gran año! 🔥`;
   }
 
-  // Cumpleaños entrenador
+  // 4️⃣ Cumpleaños entrenador
   else if (tipo === "cumple_entrenador" && nombre) {
     mensaje =
 `🎉 Feliz cumple ${nombre}! 🥳
@@ -86,7 +88,7 @@ Que tengas un año lleno de energía y buenos entrenamientos.
 ¡Vamos! 🔥`;
   }
 
-  // Recordatorio: faltan 5 días
+  // 5️⃣ Recordatorio: faltan 5 días
   else if (tipo === "recordatorio_5_dias" && nombre && fecha) {
     mensaje =
 `⏰ Hola ${nombre}
@@ -100,7 +102,7 @@ Cualquier duda, estamos a disposición.
 ¡Te esperamos en Valencia Gym! 🔥`;
   }
 
-  // Vence hoy
+  // 6️⃣ Vence hoy
   else if (tipo === "vencimiento_proximo" && nombre && fecha) {
     mensaje =
 `⏰ Hola ${nombre}
@@ -114,7 +116,7 @@ Cualquier consulta, escribinos o acercate a la recepción.
 ¡Gracias por entrenar en Valencia Gym! 🔥`;
   }
 
-  // Cuota vencida
+  // 7️⃣ Cuota vencida
   else if (tipo === "cuota_vencida" && nombre && fecha) {
     mensaje =
 `⚠️ Hola ${nombre}
@@ -123,15 +125,15 @@ Tu membresía mensual venció el *${fecha}*.
 
 Para regularizarla y continuar entrenando, podés:
 💳 Transferir al alias:
-*${ALIAS_PAGO}*
-Banco: *${BANCO_PAGO}*
+*Valencia.gym*
+Banco: *Brubank*
 
 o acercarte a la recepción del gimnasio y lo resolvemos ahí mismo 💪
 
 ¡Te esperamos! 🔥`;
   }
 
-  // Fallback
+  // 8️⃣ Fallback seguro
   else {
     mensaje =
 `👋 Hola!
@@ -143,11 +145,11 @@ Consultanos y sumate cuando quieras.
   }
 
   // =========================
-  // WHATSAPP
+  // REDIRECCIÓN A WHATSAPP
   // =========================
   const whatsappUrl =
     "https://api.whatsapp.com/send" +
-    "?phone=" + PHONE_NUMBER +
+    "?phone=" + telefono +
     "&text=" + encodeURIComponent(mensaje);
 
   window.location.replace(whatsappUrl);
